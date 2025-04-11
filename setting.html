@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANDi Admin Panel - Settings Section</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            background-color: #3474b4;
+            color: white;
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+        
+        .brand {
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            transition: 0.3s;
+        }
+        
+        .sidebar-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-menu i {
+            margin-right: 10px;
+        }
+        
+        .submenu-toggle {
+            margin-left: auto;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .header {
+            background-color: #93708b;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: none;
+        }
+        
+        .visit-website {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+        
+        .visit-website:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Settings Section Styles */
+        .settings-container {
+            padding: 20px;
+        }
+        
+        .settings-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .settings-header h2 {
+            color: #b8c027;
+            margin-left: 10px;
+        }
+        
+        .settings-tabs {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            color: #230905;
+            border-bottom: 3px solid #8ee0a0;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .logo-section {
+            margin-bottom: 20px;
+        }
+        
+        .existing-logo {
+            margin-bottom: 20px;
+        }
+        
+        .existing-logo img {
+            max-width: 200px;
+            max-height: 100px;
+            border: 1px solid #ddd;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .btn-update {
+            background-color: #8f4d7e;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .btn-update:hover {
+            background-color: #c9114b;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: fixed;
+                top: 0;
+                left: -100%;
+                height: 100%;
+                z-index: 999;
+                overflow-y: auto;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                margin-top: 60px;
+            }
+            
+            .header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 99;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .settings-tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .tab {
+                flex: 0 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="brand">ANDi</div>
+            <ul class="sidebar-menu">
+                <li><a href="index.html"><i>📊</i> Dashboard</a></li>
+                <li><a href="setting.html" class="active"><i>⚙️</i> Settings</a></li>
+                <li><a href="page.html"><i>📄</i> Page</a></li>
+                <li><a href="#"><i>🌐</i> Language</a></li>
+                <li>
+                    <a href="#"><i>📰</i> News <span class="submenu-toggle">▸</span></a>
+                </li>
+                <li><a href="#"><i>📅</i> Event</a></li>
+                <li>
+                    <a href="#"><i>👥</i> Subscriber <span class="submenu-toggle">▸</span></a>
+                </li>
+                <li><a href="#"><i>👤</i> Team Member</a></li>
+                <li><a href="#"><i>🖼️</i> Slider</a></li>
+                <li><a href="#"><i>💬</i> Testimonial</a></li>
+                <li><a href="#"><i>📸</i> Photo Gallery</a></li>
+                <li><a href="#"><i>💰</i> Pricing Table</a></li>
+                <li>
+                    <a href="#"><i>📁</i> Portfolio <span class="submenu-toggle">▸</span></a>
+                </li>
+                <li><a href="#"><i>🤝</i> Client</a></li>
+                <li><a href="#"><i>🛠️</i> Service</a></li>
+                <li><a href="#"><i>✨</i> Feature</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <button class="menu-toggle" id="menu-toggle">☰</button>
+                <div>Admin Panel</div>
+                <a href="visit website.html" class="visit-website">Visit Website</a>
+            </div>
+
+            <div class="settings-container">
+                <div class="settings-header">
+                    <span>⚙️</span>
+                    <h2>Settings Section</h2>
+                </div>
+
+                <div class="settings-tabs" id="settings-tabs">
+                    <div class="tab active" data-tab="logo">Logo</div>
+                    <div class="tab" data-tab="favicon">Favicon</div>
+                    <div class="tab" data-tab="topbar">Top Bar</div>
+                    <div class="tab" data-tab="footer">Footer</div>
+                    <div class="tab" data-tab="email">Email</div>
+                    <div class="tab" data-tab="banner">Banner</div>
+                    <div class="tab" data-tab="sidebar">Sidebar</div>
+                    <div class="tab" data-tab="color">Color</div>
+                </div>
+
+                <div class="tab-content active" id="logo-content">
+                    <div class="logo-section">
+                        <div class="form-group existing-logo">
+                            <label>Existing Photo</label>
+                            <div>
+                                <img src="logo.jpg" alt="Current Logo">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>New Photo</label>
+                            <input type="file" id="new-logo">
+                        </div>
+                        <button class="btn-update">Update Logo</button>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="favicon-content">
+                    <h3>Favicon Settings</h3>
+                    <p>Upload and manage your site favicon here.</p>
+                    <!-- Favicon content would go here -->
+                </div>
+
+                <div class="tab-content" id="topbar-content">
+                    <h3>Top Bar Settings</h3>
+                    <p>Configure the top bar of your website.</p>
+                    <!-- Top bar content would go here -->
+                </div>
+
+                <div class="tab-content" id="footer-content">
+                    <h3>Footer Settings</h3>
+                    <p>Customize your website footer.</p>
+                    <!-- Footer content would go here -->
+                </div>
+
+                <div class="tab-content" id="email-content">
+                    <h3>Email Settings</h3>
+                    <p>Configure email templates and settings.</p>
+                    <!-- Email content would go here -->
+                </div>
+
+                <div class="tab-content" id="banner-content">
+                    <h3>Banner Settings</h3>
+                    <p>Customize your website banners.</p>
+                    <!-- Banner content would go here -->
+                </div>
+
+                <div class="tab-content" id="sidebar-content">
+                    <h3>Sidebar Settings</h3>
+                    <p>Configure the sidebar appearance and content.</p>
+                    <!-- Sidebar content would go here -->
+                </div>
+
+                <div class="tab-content" id="color-content">
+                    <h3>Color Settings</h3>
+                    <p>Customize your website color scheme.</p>
+                    <!-- Color content would go here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle sidebar on mobile
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Tab functionality
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Hide all tab content
+                const tabContents = document.querySelectorAll('.tab-content');
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                // Show relevant tab content
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(`${tabId}-content`).classList.add('active');
+            });
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menu-toggle');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && event.target !== menuToggle) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

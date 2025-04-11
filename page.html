@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANDi Page Section</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+         /* Sidebar Styles */
+         .sidebar {
+            background-color: #3474b4;
+            color: white;
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+        
+        .brand {
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            transition: 0.3s;
+        }
+        
+        .sidebar-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-menu i {
+            margin-right: 10px;
+        }
+        
+        .submenu-toggle {
+            margin-left: auto;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-left: 4px solid white;
+        }
+
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            background-color: #f5f5f5;
+            overflow-y: auto;
+        }
+
+        .top-bar {
+            background-color: #3474a8;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-toggle {
+            font-size: 24px;
+            margin-right: 15px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 10px;
+            object-fit: cover;
+            border: 2px solid white;
+        }
+
+        .content-area {
+            padding: 20px;
+        }
+
+        .page-section {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            border-radius: 5px 5px 0 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-header i {
+            color: #3474a8;
+            font-size: 20px;
+            margin-right: 10px;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #343a40;
+        }
+
+        .navigation-tabs {
+            display: flex;
+            overflow-x: auto;
+            border-bottom: 1px solid #e9ecef;
+            background-color: #f8f9fa;
+        }
+
+        .nav-tab {
+            padding: 12px 20px;
+            white-space: nowrap;
+            cursor: pointer;
+            position: relative;
+            color: #495057;
+            transition: all 0.3s;
+        }
+
+        .nav-tab:hover {
+            color: #3474a8;
+        }
+
+        .nav-tab.active {
+            color: #3474a8;
+            font-weight: 600;
+        }
+
+        .nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #3474a8;
+        }
+
+        .section-body {
+            padding: 20px;
+        }
+
+        .meta-items, .welcome-section {
+            background-color: #fff9e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .form-group label {
+            width: 150px;
+            font-weight: 500;
+            color: #495057;
+            padding-top: 8px;
+        }
+
+        .form-control {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.15s ease-in-out;
+        }
+
+        textarea.form-control {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-control:focus {
+            border-color: #3474a8;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 116, 168, 0.25);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #3474a8;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2a5f8a;
+        }
+
+        .text-editor {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .editor-toolbar {
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #ced4da;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-btn {
+            width: 30px;
+            height: 30px;
+            background: none;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            margin-right: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .toolbar-btn:hover {
+            background-color: #e9ecef;
+            border-color: #ced4da;
+        }
+
+        .dropdown-btn {
+            padding: 6px 10px;
+            background: none;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .dropdown-btn::after {
+            content: '▼';
+            font-size: 10px;
+            margin-left: 5px;
+        }
+
+        .editor-content {
+            padding: 10px;
+            min-height: 100px;
+            outline: none;
+        }
+
+        /* Responsive design */
+        @media (max-width: 992px) {
+            .form-group {
+                flex-direction: column;
+            }
+            
+            .form-group label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                max-height: 0;
+                overflow: hidden;
+                position: fixed;
+                z-index: 100;
+                top: 60px;
+                left: 0;
+            }
+            
+            .sidebar.open {
+                max-height: calc(100vh - 60px);
+                overflow-y: auto;
+            }
+            
+            .main-content {
+                width: 100%;
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .navigation-tabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+            
+            .nav-tab {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            
+            .editor-toolbar {
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section-header h2 {
+                font-size: 16px;
+            }
+            
+            .top-bar {
+                padding: 10px;
+            }
+            
+            .content-area {
+                padding: 10px;
+            }
+            
+            .section-body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="brand">ANDi</div>
+            <ul class="sidebar-menu">
+                <li><a href="index.html"><i>📊</i> Dashboard</a></li>
+                <li><a href="setting.html" class="active"><i>⚙️</i> Settings</a></li>
+                <li><a href="page.html"><i>📄</i> Page</a></li>
+                <li><a href="#"><i>🌐</i> Language</a></li>
+                <li>
+                    <a href="#"><i>📰</i> News <span class="submenu-toggle">▸</span></a>
+                </li>
+                <li><a href="#"><i>📅</i> Event</a></li>
+                <li>
+                    <a href="#"><i>👥</i> Subscriber <span class="submenu-toggle">▸</span></a>
+                </li>
+                <li><a href="#"><i>👤</i> Team Member</a></li>
+                <li><a href="#"><i>🖼️</i> Slider</a></li>
+                <li><a href="#"><i>💬</i> Testimonial</a></li>
+                <li><a href="#"><i>📸</i> Photo Gallery</a></li>
+                <li><a href="#"><i>💰</i> Pricing Table</a></li>
+                <li>
+                    <a href="#"><i>📁</i> Portfolio <span class="submenu-toggle">▸</span></a>
+                </li>
+                <li><a href="#"><i>🤝</i> Client</a></li>
+                <li><a href="#"><i>🛠️</i> Service</a></li>
+                <li><a href="#"><i>✨</i> Feature</a></li>
+            </ul>
+        </div>
+        
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="top-bar-left">
+                    <div class="menu-toggle" id="menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                    <div>Admin Panel</div>
+                </div>
+                <div class="top-bar-right">
+                    <div class="user-profile">
+                        <img src="logo.jpg" alt="Profile" class="profile-img">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-area">
+                <div class="page-section">
+                    <div class="section-header">
+                        <i class="fas fa-file-alt"></i>
+                        <h2>Page Section</h2>
+                    </div>
+                    
+                    <div class="navigation-tabs">
+                        <div class="nav-tab active">Home</div>
+                        <div class="nav-tab">About</div>
+                        <div class="nav-tab">FAQ</div>
+                        <div class="nav-tab">Service</div>
+                        <div class="nav-tab">Testimonial</div>
+                        <div class="nav-tab">News</div>
+                        <div class="nav-tab">Event</div>
+                        <div class="nav-tab">Contact</div>
+                        <div class="nav-tab">Search</div>
+                        <div class="nav-tab">Terms</div>
+                        <div class="nav-tab">Privacy</div>
+                        <div class="nav-tab">Team</div>
+                        <div class="nav-tab">Portfolio</div>
+                    </div>
+                    
+                    <div class="section-body">
+                        <div class="meta-items">
+                            <h3>Meta Items</h3>
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input type="text" id="title" class="form-control" value="d! by ANDi">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="meta-keyword">Meta Keyword</label>
+                                <textarea id="meta-keyword" class="form-control"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="meta-description">Meta Description</label>
+                                <textarea id="meta-description" class="form-control"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label></label>
+                                <button class="btn btn-primary" id="update-meta">Update</button>
+                            </div>
+                        </div>
+                        
+                        <div class="welcome-section">
+                            <h3>Welcome Section</h3>
+                            <div class="form-group">
+                                <label for="welcome-title">Title</label>
+                                <input type="text" id="welcome-title" class="form-control" value="A TRUE LEADER CAN">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="welcome-subtitle">SubTitle</label>
+                                <input type="text" id="welcome-subtitle" class="form-control" value="HELP YOU IN BUSINESS">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="welcome-text">Text</label>
+                                <div class="text-editor">
+                                    <div class="editor-toolbar">
+                                        <button class="toolbar-btn" title="Format"><i class="fas fa-font"></i></button>
+                                        <button class="toolbar-btn" title="Bold"><i class="fas fa-bold"></i></button>
+                                        <button class="toolbar-btn" title="Italic"><i class="fas fa-italic"></i></button>
+                                        <button class="toolbar-btn" title="Strikethrough"><i class="fas fa-strikethrough"></i></button>
+                                        <button class="dropdown-btn">Poppins</button>
+                                        <button class="toolbar-btn" title="Highlight"><i class="fas fa-highlighter"></i></button>
+                                        <button class="toolbar-btn" title="Bullet List"><i class="fas fa-list-ul"></i></button>
+                                        <button class="toolbar-btn" title="Numbered List"><i class="fas fa-list-ol"></i></button>
+                                        <button class="toolbar-btn" title="Alignment"><i class="fas fa-align-left"></i></button>
+                                        <button class="toolbar-btn" title="Table"><i class="fas fa-table"></i></button>
+                                        <button class="toolbar-btn" title="Link"><i class="fas fa-link"></i></button>
+                                        <button class="toolbar-btn" title="Image"><i class="fas fa-image"></i></button>
+                                        <button class="toolbar-btn" title="Video"><i class="fas fa-video"></i></button>
+                                        <button class="toolbar-btn" title="Code"><i class="fas fa-code"></i></button>
+                                        <button class="toolbar-btn" title="Help"><i class="fas fa-question"></i></button>
+                                    </div>
+                                    <div class="editor-content" contenteditable="true">Contact ANDi Software Solutions to get perfectly optimised webportal for your business.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label></label>
+                                <button class="btn btn-primary" id="update-welcome">Update</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Font Awesome for icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    
+    <script>
+        // Toggle sidebar on mobile
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+        
+        // Close sidebar on mobile when clicking the close button
+        document.getElementById('close-sidebar').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('open');
+        });
+        
+        // Tab navigation
+        const navTabs = document.querySelectorAll('.nav-tab');
+        navTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                navTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                // Here you would load the content for the selected tab
+            });
+        });
+        
+        // Update buttons functionality
+        document.getElementById('update-meta').addEventListener('click', function() {
+            // Simulate update with success message
+            alert('Meta information updated successfully!');
+        });
+        
+        document.getElementById('update-welcome').addEventListener('click', function() {
+            // Simulate update with success message
+            alert('Welcome section updated successfully!');
+        });
+        
+        // Add text editor basic functionality
+        const editorButtons = document.querySelectorAll('.toolbar-btn');
+        editorButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // This is a simple implementation. In a real app, you'd want to use a library
+                // or implement more robust text editing functionality
+                document.execCommand(this.getAttribute('data-command') || 'bold', false, null);
+            });
+        });
+        
+        // Handle window resize for responsive design
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        });
+        
+        // Add lazy loading for better performance
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize components only when needed
+            // Defer non-critical scripts
+            
+            // Add smooth scrolling for better UX
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
