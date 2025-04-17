@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANDi Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3878b2;
+            --primary-dark: #2c5d8f;
+            --sidebar-bg: #2c3e50;
+            --sidebar-width: 240px;
+            --sidebar-collapsed-width: 60px;
+            --white: #ffffff;
+            --light-gray: #f0f3f8;
+            --border-color: #e9ecef;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+            overflow-x: hidden;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            color: var(--white);
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 100;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .logo {
+            padding: 15px;
+            font-size: 22px;
+            font-weight: bold;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            background-color: var(--primary-dark);
+            justify-content: center;
+        }
+
+        .sidebar-menu {
+            padding: 10px 0;
+        }
+
+        .menu-item {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--white);
+            text-decoration: none;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 3px solid var(--primary);
+        }
+
+        .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-left: 3px solid var(--primary);
+        }
+
+        .menu-item i {
+            width: 30px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .menu-item span {
+            margin-left: 10px;
+            white-space: nowrap;
+            opacity: 1;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar.collapsed .menu-item span {
+            opacity: 0;
+            width: 0;
+            display: none;
+        }
+
+        .submenu {
+            margin-left: 40px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .submenu.expanded {
+            max-height: 500px;
+        }
+
+        .sidebar.collapsed .submenu {
+            display: none !important;
+        }
+
+        .submenu-item {
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--white);
+            text-decoration: none;
+        }
+
+        .submenu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .toggle-sidebar {
+            position: fixed;
+            left: var(--sidebar-width);
+            top: 15px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 101;
+            transition: left 0.3s;
+        }
+
+        .toggle-sidebar.collapsed {
+            left: var(--sidebar-collapsed-width);
+        }
+
+        .content {
+            flex: 1;
+            background-color: #f0f3f7;
+        }
+        
+        .header {
+            background-color: #3674b0;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .main-content {
+            padding: 20px;
+            margin-left: 238px;
+        }
+        
+        .page-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            color: #3674b0;
+        }
+        
+        .page-title i {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+        
+        .success-alert {
+            background-color: #28a745;
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            margin-bottom: 20px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+        
+        .photo-placeholder {
+            width: 80px;
+            height: 80px;
+            background-color: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 5px;
+        }
+        
+        .btn-primary {
+            background-color: #3674b0;
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-info {
+            background-color: #5bc0de;
+            color: white;
+        }
+        
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        
+        .pagination button {
+            padding: 6px 12px;
+            margin: 0 2px;
+            border: 1px solid #ddd;
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        .pagination button.active {
+            background-color: #3674b0;
+            color: white;
+            border-color: #3674b0;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .close {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .form-actions {
+            margin-top: 20px;
+            text-align: right;
+        }
+        
+        .search-box {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
+        }
+        
+        select.form-control {
+            height: 34px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Toggle Sidebar Button -->
+        <button class="toggle-sidebar" id="toggleSidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo">ANDi</div>
+            <div class="sidebar-menu">
+                <a href="index.html" class="menu-item active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="setting.html" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="page.html" class="menu-item">
+                    <i class="fas fa-file"></i>
+                    <span>Page</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-language"></i>
+                    <span>Language</span>
+                </a>
+                <a href="#" class="menu-item has-submenu" data-target="newsSubmenu">
+                    <i class="fas fa-newspaper"></i>
+                    <span>News</span>
+                    <i class="fas fa-chevron-down" style="margin-left: auto;"></i>
+                </a>
+                <div class="submenu" id="newsSubmenu">
+                    <a href="#" class="submenu-item">
+                        <i class="fas fa-circle"></i>
+                        <span>Category</span>
+                    </a>
+                    <a href="#" class="submenu-item">
+                        <i class="fas fa-circle"></i>
+                        <span>News</span>
+                    </a>
+                    <a href="#" class="submenu-item">
+                        <i class="fas fa-circle"></i>
+                        <span>Comment</span>
+                    </a>
+                </div>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>Event</span>
+                </a>
+                <a href="#" class="menu-item has-submenu" data-target="subscriberSubmenu">
+                    <i class="fas fa-users"></i>
+                    <span>Subscriber</span>
+                    <i class="fas fa-chevron-down" style="margin-left: auto;"></i>
+                </a>
+                <div class="submenu" id="subscriberSubmenu">
+                    <a href="#" class="submenu-item">
+                        <i class="fas fa-circle"></i>
+                        <span>All Subscribers</span>
+                    </a>
+                    <a href="#" class="submenu-item">
+                        <i class="fas fa-circle"></i>
+                        <span>Add Subscriber</span>
+                    </a>
+                </div>
+                <a href="teamMember.html" class="menu-item">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Team Member</span>
+                </a>
+                <a href="slider.html" class="menu-item">
+                    <i class="fas fa-images"></i>
+                    <span>Slider</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-comment"></i>
+                    <span>Testimonial</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-photo-video"></i>
+                    <span>Photo Gallery</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-tags"></i>
+                    <span>Pricing Table</span>
+                </a>
+                <a href="#" class="menu-item has-submenu" data-target="portfolioSubmenu">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Portfolio</span>
+                    <i class="fas fa-chevron-down" style="margin-left: auto;"></i>
+                </a>
+                <div class="submenu" id="portfolioSubmenu">
+                    <a href="#" class="submenu-item">
+                        <i class="fas fa-circle"></i>
+                        <span>All Projects</span>
+                    </a>
+                    <a href="#" class="submenu-item">
+                        <i class="fas fa-circle"></i>
+                        <span>Add Project</span>
+                    </a>
+                </div>
+                <a href="viewClient.html" class="menu-item">
+                    <i class="fas fa-user"></i>
+                    <span>Client</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+    <div class="content">
+        <div class="header">
+            <div class="header-title">Admin Panel</div>
+            <div class="header-actions">
+                <a href="visit-website.html">Visit Website</a>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content" id="mainContent">
+            <!-- View Team Members Page -->
+            <div id="viewTeamMembers">
+                <div class="page-title">
+                    <i>👥</i>
+                    <h2>View Team Members</h2>
+                </div>
+                
+                <div id="successAlert" class="success-alert" style="display: none;">
+                    Team Member is deleted successfully
+                </div>
+                
+                <div class="table-controls">
+                    <div>
+                        Show 
+                        <select id="entriesPerPage" class="form-control" style="width: auto; display: inline-block;">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        entries
+                    </div>
+                    <div>
+                        <button id="addTeamMemberBtn" class="btn btn-primary">Add Team Member</button>
+                    </div>
+                    <div>
+                        Search: <input type="text" id="searchBox" class="search-box">
+                    </div>
+                </div>
+                
+                <table id="teamMembersTable">
+                    <thead>
+                        <tr>
+                            <th>SL</th>
+                            <th>Photo</th>
+                            <th>Name</th>
+                            <th>Designation</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teamMembersList">
+                        <!-- Team members will be added here dynamically -->
+                    </tbody>
+                </table>
+                
+                <div id="paginationInfo">Showing 1 to 2 of 2 entries</div>
+                
+                <div class="pagination">
+                    <button id="prevPage">Previous</button>
+                    <button class="active">1</button>
+                    <button id="nextPage">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Team Member Modal -->
+    <div id="addTeamMemberModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Add Team Member</div>
+                <span class="close" id="closeAddModal">&times;</span>
+            </div>
+            <form id="addTeamMemberForm">
+                <div class="form-group">
+                    <label for="memberName">Name</label>
+                    <input type="text" id="memberName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="memberDesignation">Designation</label>
+                    <input type="text" id="memberDesignation" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="memberPhoto">Photo</label>
+                    <input type="file" id="memberPhoto" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="memberDescription">Description</label>
+                    <textarea id="memberDescription" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="memberEmail">Email</label>
+                    <input type="email" id="memberEmail" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="memberPhone">Phone</label>
+                    <input type="text" id="memberPhone" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="memberSocialLinks">Social Links</label>
+                    <input type="text" id="memberFacebook" class="form-control" placeholder="Facebook URL">
+                    <input type="text" id="memberTwitter" class="form-control mt-2" placeholder="Twitter URL">
+                    <input type="text" id="memberLinkedin" class="form-control mt-2" placeholder="LinkedIn URL">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-danger" id="cancelAddBtn">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Team Member Modal -->
+    <div id="editTeamMemberModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Edit Team Member</div>
+                <span class="close" id="closeEditModal">&times;</span>
+            </div>
+            <form id="editTeamMemberForm">
+                <input type="hidden" id="editMemberId">
+                <div class="form-group">
+                    <label for="editMemberName">Name</label>
+                    <input type="text" id="editMemberName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="editMemberDesignation">Designation</label>
+                    <input type="text" id="editMemberDesignation" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="editMemberPhoto">Photo</label>
+                    <input type="file" id="editMemberPhoto" class="form-control">
+                    <div id="currentPhotoPreview" class="mt-2"></div>
+                </div>
+                <div class="form-group">
+                    <label for="editMemberDescription">Description</label>
+                    <textarea id="editMemberDescription" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editMemberEmail">Email</label>
+                    <input type="email" id="editMemberEmail" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="editMemberPhone">Phone</label>
+                    <input type="text" id="editMemberPhone" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="editMemberSocialLinks">Social Links</label>
+                    <input type="text" id="editMemberFacebook" class="form-control" placeholder="Facebook URL">
+                    <input type="text" id="editMemberTwitter" class="form-control mt-2" placeholder="Twitter URL">
+                    <input type="text" id="editMemberLinkedin" class="form-control mt-2" placeholder="LinkedIn URL">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-danger" id="cancelEditBtn">Cancel</button>
+                    <button type="submit" class="btn btn-success">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for team members
+        let teamMembers = [
+            {
+                id: 1,
+                name: "Danny Ashton",
+                designation: "Chairman",
+                photo: "placeholder",
+                description: "Team leader with 10 years of experience",
+                email: "danny@example.com",
+                phone: "+1-234-567-8901",
+                facebook: "https://facebook.com/dannyashton",
+                twitter: "https://twitter.com/dannyashton",
+                linkedin: "https://linkedin.com/in/dannyashton"
+            },
+            {
+                id: 2,
+                name: "Terry Spain",
+                designation: "WordPress Developer",
+                photo: "placeholder",
+                description: "Expert WordPress developer with 5 years of experience",
+                email: "terry@example.com",
+                phone: "+1-234-567-8902",
+                facebook: "https://facebook.com/terryspain",
+                twitter: "https://twitter.com/terryspain",
+                linkedin: "https://linkedin.com/in/terryspain"
+            }
+        ];
+
+        // Display team members in the table
+        function displayTeamMembers() {
+            const tableBody = document.getElementById('teamMembersList');
+            tableBody.innerHTML = '';
+            
+            teamMembers.forEach((member, index) => {
+                const row = document.createElement('tr');
+                
+                // SL column
+                const slCell = document.createElement('td');
+                slCell.textContent = index + 1;
+                row.appendChild(slCell);
+                
+                // Photo column
+                const photoCell = document.createElement('td');
+                const photoPlaceholder = document.createElement('div');
+                photoPlaceholder.className = 'photo-placeholder';
+                photoPlaceholder.textContent = '600x600';
+                photoCell.appendChild(photoPlaceholder);
+                row.appendChild(photoCell);
+                
+                // Name column
+                const nameCell = document.createElement('td');
+                nameCell.textContent = member.name;
+                row.appendChild(nameCell);
+                
+                // Designation column
+                const designationCell = document.createElement('td');
+                designationCell.textContent = member.designation;
+                row.appendChild(designationCell);
+                
+                // Action column
+                const actionCell = document.createElement('td');
+                
+                const editBtn = document.createElement('button');
+                editBtn.className = 'btn btn-info';
+                editBtn.textContent = 'Edit';
+                editBtn.addEventListener('click', () => editTeamMember(member.id));
+                actionCell.appendChild(editBtn);
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-danger';
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.addEventListener('click', () => deleteTeamMember(member.id));
+                actionCell.appendChild(deleteBtn);
+                
+                row.appendChild(actionCell);
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Update pagination info
+            document.getElementById('paginationInfo').textContent = `Showing 1 to ${teamMembers.length} of ${teamMembers.length} entries`;
+        }
+
+        // Delete team member
+        function deleteTeamMember(id) {
+            if (confirm('Are you sure you want to delete this team member?')) {
+                teamMembers = teamMembers.filter(member => member.id !== id);
+                displayTeamMembers();
+                
+                // Show success message
+                const successAlert = document.getElementById('successAlert');
+                successAlert.style.display = 'block';
+                
+                // Hide success message after 3 seconds
+                setTimeout(() => {
+                    successAlert.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // Edit team member - open modal and populate form
+        function editTeamMember(id) {
+            const member = teamMembers.find(member => member.id === id);
+            if (member) {
+                document.getElementById('editMemberId').value = member.id;
+                document.getElementById('editMemberName').value = member.name;
+                document.getElementById('editMemberDesignation').value = member.designation;
+                document.getElementById('editMemberDescription').value = member.description || '';
+                document.getElementById('editMemberEmail').value = member.email || '';
+                document.getElementById('editMemberPhone').value = member.phone || '';
+                document.getElementById('editMemberFacebook').value = member.facebook || '';
+                document.getElementById('editMemberTwitter').value = member.twitter || '';
+                document.getElementById('editMemberLinkedin').value = member.linkedin || '';
+                
+                // Show current photo preview
+                const photoPreview = document.getElementById('currentPhotoPreview');
+                photoPreview.innerHTML = '';
+                const photoPlaceholder = document.createElement('div');
+                photoPlaceholder.className = 'photo-placeholder';
+                photoPlaceholder.textContent = '600x600';
+                photoPreview.appendChild(photoPlaceholder);
+                
+                // Open the modal
+                document.getElementById('editTeamMemberModal').style.display = 'flex';
+            }
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Display team members on page load
+            displayTeamMembers();
+            
+            // Add Team Member Button Click
+            document.getElementById('addTeamMemberBtn').addEventListener('click', function() {
+                document.getElementById('addTeamMemberModal').style.display = 'flex';
+            });
+            
+            // Close Add Modal
+            document.getElementById('closeAddModal').addEventListener('click', function() {
+                document.getElementById('addTeamMemberModal').style.display = 'none';
+            });
+            
+            // Close Edit Modal
+            document.getElementById('closeEditModal').addEventListener('click', function() {
+                document.getElementById('editTeamMemberModal').style.display = 'none';
+            });
+            
+            // Cancel Add Button
+            document.getElementById('cancelAddBtn').addEventListener('click', function() {
+                document.getElementById('addTeamMemberModal').style.display = 'none';
+            });
+            
+            // Cancel Edit Button
+            document.getElementById('cancelEditBtn').addEventListener('click', function() {
+                document.getElementById('editTeamMemberModal').style.display = 'none';
+            });
+            
+            // Add Team Member Form Submit
+            document.getElementById('addTeamMemberForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const name = document.getElementById('memberName').value;
+                const designation = document.getElementById('memberDesignation').value;
+                const description = document.getElementById('memberDescription').value;
+                const email = document.getElementById('memberEmail').value;
+                const phone = document.getElementById('memberPhone').value;
+                const facebook = document.getElementById('memberFacebook').value;
+                const twitter = document.getElementById('memberTwitter').value;
+                const linkedin = document.getElementById('memberLinkedin').value;
+                
+                // Create new team member
+                const newMember = {
+                    id: teamMembers.length > 0 ? Math.max(...teamMembers.map(m => m.id)) + 1 : 1,
+                    name,
+                    designation,
+                    photo: "placeholder",
+                    description,
+                    email,
+                    phone,
+                    facebook,
+                    twitter,
+                    linkedin
+                };
+                
+                // Add to team members array
+                teamMembers.push(newMember);
+                
+                // Update display
+                displayTeamMembers();
+                
+                // Close modal
+                document.getElementById('addTeamMemberModal').style.display = 'none';
+                
+                // Reset form
+                document.getElementById('addTeamMemberForm').reset();
+                
+                // Show success message
+                const successAlert = document.getElementById('successAlert');
+                successAlert.textContent = 'Team Member is added successfully';
+                successAlert.style.display = 'block';
+                
+                // Hide success message after 3 seconds
+                setTimeout(() => {
+                    successAlert.style.display = 'none';
+                }, 3000);
+            });
+            
+            // Edit Team Member Form Submit
+            document.getElementById('editTeamMemberForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const id = parseInt(document.getElementById('editMemberId').value);
+                const name = document.getElementById('editMemberName').value;
+                const designation = document.getElementById('editMemberDesignation').value;
+                const description = document.getElementById('editMemberDescription').value;
+                const email = document.getElementById('editMemberEmail').value;
+                const phone = document.getElementById('editMemberPhone').value;
+                const facebook = document.getElementById('editMemberFacebook').value;
+                const twitter = document.getElementById('editMemberTwitter').value;
+                const linkedin = document.getElementById('editMemberLinkedin').value;
+                
+                // Find and update team member
+                const memberIndex = teamMembers.findIndex(member => member.id === id);
+                if (memberIndex !== -1) {
+                    teamMembers[memberIndex] = {
+                        ...teamMembers[memberIndex],
+                        name,
+                        designation,
+                        description,
+                        email,
+                        phone,
+                        facebook,
+                        twitter,
+                        linkedin
+                    };
+                    
+                    // Update display
+                    displayTeamMembers();
+                    
+                    // Close modal
+                    document.getElementById('editTeamMemberModal').style.display = 'none';
+                    
+                    // Show success message
+                    const successAlert = document.getElementById('successAlert');
+                    successAlert.textContent = 'Team Member is updated successfully';
+                    successAlert.style.display = 'block';
+                    
+                    // Hide success message after 3 seconds
+                    setTimeout(() => {
+                        successAlert.style.display = 'none';
+                    }, 3000);
+                }
+            });
+            
+            // Search functionality
+            document.getElementById('searchBox').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                if (searchTerm.trim() === '') {
+                    displayTeamMembers();
+                    return;
+                }
+                
+                const filteredMembers = teamMembers.filter(member => 
+                    member.name.toLowerCase().includes(searchTerm) || 
+                    member.designation.toLowerCase().includes(searchTerm)
+                );
+                
+                const tableBody = document.getElementById('teamMembersList');
+                tableBody.innerHTML = '';
+                
+                filteredMembers.forEach((member, index) => {
+                    const row = document.createElement('tr');
+                    
+                    // SL column
+                    const slCell = document.createElement('td');
+                    slCell.textContent = index + 1;
+                    row.appendChild(slCell);
+                    
+                    // Photo column
+                    const photoCell = document.createElement('td');
+                    const photoPlaceholder = document.createElement('div');
+                    photoPlaceholder.className = 'photo-placeholder';
+                    photoPlaceholder.textContent = '600x600';
+                    photoCell.appendChild(photoPlaceholder);
+                    row.appendChild(photoCell);
+                    
+                    // Name column
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = member.name;
+                    row.appendChild(nameCell);
+                    
+                    // Designation column
+                    const designationCell = document.createElement('td');
+                    designationCell.textContent = member.designation;
+                    row.appendChild(designationCell);
+                    
+                    // Action column
+                    const actionCell = document.createElement('td');
+                    
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'btn btn-info';
+                    editBtn.textContent = 'Edit';
+                    editBtn.addEventListener('click', () => editTeamMember(member.id));
+                    actionCell.appendChild(editBtn);
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'btn btn-danger';
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.addEventListener('click', () => deleteTeamMember(member.id));
+                    actionCell.appendChild(deleteBtn);
+                    
+                    row.appendChild(actionCell);
+                    
+                    tableBody.appendChild(row);
+                });
+                
+                // Update pagination info
+                document.getElementById('paginationInfo').textContent = `Showing 1 to ${filteredMembers.length} of ${filteredMembers.length} entries`;
+            });
+        });
+    </script>
+</body>
+</html>
+            
